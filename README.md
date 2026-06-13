@@ -1,17 +1,21 @@
 # VOD Preferences Tests
 
-AI-assisted API test automation for VOD onboarding flow.
+AI-assisted API and UI test automation for VOD onboarding flow.
 
 ---
 
 ## Description
 
-This project contains automated API tests for the **Profile Onboarding — VOD Preferences** feature.
+This project contains automated tests for the **Profile Onboarding — VOD Preferences** feature.
 The onboarding flow allows new users to select their favourite genres and movies,
 which are then used to personalise their home screen recommendations.
 
 80% of test artifacts (test cases and code) were generated using AI (Claude by Anthropic),
 with a human acting as Reviewer and Prompt Engineer.
+
+> **Note:** AI initially generated only API tests and missed the UI test layer requirement.
+> The Reviewer identified this gap and prompted AI to add Playwright UI tests.
+> See `PROMPTS.md` for full details.
 
 ---
 
@@ -22,7 +26,8 @@ with a human acting as Reviewer and Prompt Engineer.
 | Java 17 | Programming language |
 | Maven | Build tool |
 | REST Assured 5.4.0 | API test framework |
-| TestNG 7.9.0 | Test runner |
+| Playwright for Java 1.44.0 | UI test framework |
+| TestNG 7.5 | Test runner |
 | Allure 2.25.0 | Test reporting |
 | Jackson | JSON serialization |
 
@@ -37,22 +42,27 @@ vod-preferences-tests/
 │       ├── java/
 │       │   └── com/vod/
 │       │       ├── config/
-│       │       │   └── ApiConfig.java          # Base URL, auth token, profile IDs
+│       │       │   └── ApiConfig.java              # Base URL, auth token, profile IDs
 │       │       ├── models/
 │       │       │   └── VodPreferencesRequest.java  # Request body model
 │       │       └── tests/
-│       │           └── VodPreferencesApiTest.java  # API test cases
+│       │           ├── BaseUiTest.java             # Playwright setup/teardown base class
+│       │           ├── VodPreferencesApiTest.java  # API tests (group: api)
+│       │           └── VodOnboardingUiTest.java    # UI tests (group: ui)
 │       └── resources/
-│           └── testng.xml                      # Test suite configuration
+│           └── testng.xml                          # Test suite with API and UI groups
+├── TEST-CASES.md                                   # All test cases (API + UI)
+├── PROMPTS.md                                      # AI prompt log
+├── AI-STRATEGY.md                                  # AI test generation strategy
 ├── pom.xml
-├── PROMPTS.md                                  # AI prompt log
-├── AI-STRATEGY.md                              # AI test generation strategy
 └── README.md
 ```
 
 ---
 
 ## Test Coverage
+
+### API Tests (group: api)
 
 | Test | Description | Type |
 |------|-------------|------|
@@ -63,12 +73,30 @@ vod-preferences-tests/
 | testSavePreferencesWithoutAuth | API returns 401 without auth token | Security |
 | testRecommendationsUpdateAfterPreferences | Recommendations change after preferences saved | Integration |
 
+### UI Tests (group: ui)
+
+| Test | Description | Type |
+|------|-------------|------|
+| testNextButtonDisabledWithLessThanThreeGenres | Next button disabled when < 3 genres selected | Negative |
+| testNextButtonEnabledWithThreeGenres | Next button enabled when exactly 3 genres selected | Positive |
+
 ---
 
 ## How to Run
 
+**Run all tests:**
 ```bash
 mvn test
+```
+
+**Run only API tests:**
+```bash
+mvn test -Dgroups=api
+```
+
+**Run only UI tests:**
+```bash
+mvn test -Dgroups=ui
 ```
 
 ---
@@ -76,5 +104,6 @@ mvn test
 ## Notes
 
 - `BASE_URL` in `ApiConfig.java` is set to `https://api.example.com` (mock).
-- Tests will fail with `UnknownHostException` until connected to a real or mock server.
+- UI tests use `https://example.com/onboarding` as a placeholder URL.
+- Tests will fail with connection errors until connected to a real or mock server.
 - All test artifacts were generated using AI. See `PROMPTS.md` for full prompt log.

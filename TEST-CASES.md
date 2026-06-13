@@ -2,12 +2,15 @@
 
 > Generated via AI (Claude) based on User Story requirements.
 > Format: structured for TMS import (TestRail-compatible).
+> UI test cases (TC-UI-*) added manually after AI missed the UI layer requirement.
 
 ---
 
-## TC-01 — Onboarding screen appears once after profile creation
+## 🔵 API TEST CASES
 
-**Type:** Positive | **Priority:** High | **Layer:** E2E
+### TC-01 — Onboarding screen appears once after profile creation
+
+**Type:** Positive | **Priority:** High | **Layer:** E2E | **Group:** api
 
 **Preconditions:** User is authenticated; new profile just created.
 
@@ -19,9 +22,9 @@
 
 ---
 
-## TC-02 — Onboarding screen does NOT appear on second visit
+### TC-02 — Onboarding screen does NOT appear on second visit
 
-**Type:** Negative | **Priority:** High | **Layer:** E2E
+**Type:** Negative | **Priority:** High | **Layer:** E2E | **Group:** api
 
 **Preconditions:** User has already seen and completed/skipped the onboarding screen.
 
@@ -34,9 +37,9 @@
 
 ---
 
-## TC-03 — "Next" button is disabled when fewer than 3 genres selected
+### TC-03 — "Next" button is disabled when fewer than 3 genres selected
 
-**Type:** Negative | **Priority:** High | **Layer:** E2E / UI Logic
+**Type:** Negative | **Priority:** High | **Layer:** E2E / UI Logic | **Group:** api
 
 **Preconditions:** Onboarding screen is visible; Step 1 (genre selection).
 
@@ -48,9 +51,9 @@
 
 ---
 
-## TC-04 — "Next" button activates when exactly 3 genres are selected
+### TC-04 — "Next" button activates when exactly 3 genres are selected
 
-**Type:** Positive (Boundary) | **Priority:** High | **Layer:** E2E / UI Logic
+**Type:** Positive (Boundary) | **Priority:** High | **Layer:** E2E / UI Logic | **Group:** api
 
 **Preconditions:** Onboarding screen is visible; Step 1.
 
@@ -62,9 +65,9 @@
 
 ---
 
-## TC-05 — "Next" button remains active when more than 3 genres are selected
+### TC-05 — "Next" button remains active when more than 3 genres are selected
 
-**Type:** Positive | **Priority:** Medium | **Layer:** E2E / UI Logic
+**Type:** Positive | **Priority:** Medium | **Layer:** E2E / UI Logic | **Group:** api
 
 **Preconditions:** Onboarding screen is visible; Step 1.
 
@@ -76,9 +79,9 @@
 
 ---
 
-## TC-06 — Step 2 shows movies based on selected genres
+### TC-06 — Step 2 shows movies based on selected genres
 
-**Type:** Positive | **Priority:** High | **Layer:** E2E / API
+**Type:** Positive | **Priority:** High | **Layer:** E2E / API | **Group:** api
 
 **Preconditions:** User selected 3+ genres on Step 1 and clicked "Next".
 
@@ -91,9 +94,9 @@
 
 ---
 
-## TC-07 — User can select exactly 5 movies on Step 2
+### TC-07 — User can select exactly 5 movies on Step 2
 
-**Type:** Positive | **Priority:** High | **Layer:** E2E
+**Type:** Positive | **Priority:** High | **Layer:** E2E | **Group:** api
 
 **Preconditions:** User is on Step 2.
 
@@ -105,9 +108,9 @@
 
 ---
 
-## TC-08 — API saves selected genre and movie IDs correctly
+### TC-08 — API saves selected genre and movie IDs correctly
 
-**Type:** Positive | **Priority:** Critical | **Layer:** API
+**Type:** Positive | **Priority:** Critical | **Layer:** API | **Group:** api
 
 **Preconditions:** Valid profile_id exists; valid genre IDs and movie IDs are known.
 
@@ -129,11 +132,9 @@
 
 ---
 
-## TC-09 — API returns 400 for fewer than 3 genre IDs
+### TC-09 — API returns 400 for fewer than 3 genre IDs
 
-**Type:** Negative | **Priority:** High | **Layer:** API
-
-**Preconditions:** Valid profile_id exists.
+**Type:** Negative | **Priority:** High | **Layer:** API | **Group:** api
 
 **Steps:**
 1. Send `POST /v1/profile/{profile_id}/vod-preferences` with body:
@@ -144,15 +145,13 @@
 }
 ```
 
-**Expected Result:** Response `400 Bad Request` with a meaningful error message (e.g. `"At least 3 genres required"`).
+**Expected Result:** Response `400 Bad Request` with error message.
 
 ---
 
-## TC-10 — API returns 400 for empty genre list
+### TC-10 — API returns 400 for empty genre and movie lists
 
-**Type:** Negative (Boundary) | **Priority:** High | **Layer:** API
-
-**Preconditions:** Valid profile_id exists.
+**Type:** Negative (Boundary) | **Priority:** High | **Layer:** API | **Group:** api
 
 **Steps:**
 1. Send `POST /v1/profile/{profile_id}/vod-preferences` with body:
@@ -167,9 +166,9 @@
 
 ---
 
-## TC-11 — API returns 404 for non-existent profile_id
+### TC-11 — API returns 404 for non-existent profile_id
 
-**Type:** Negative | **Priority:** High | **Layer:** API
+**Type:** Negative | **Priority:** High | **Layer:** API | **Group:** api
 
 **Steps:**
 1. Send `POST /v1/profile/99999999/vod-preferences` with valid body.
@@ -178,9 +177,9 @@
 
 ---
 
-## TC-12 — API returns 401 when request is unauthenticated
+### TC-12 — API returns 401 when request is unauthenticated
 
-**Type:** Negative | **Priority:** High | **Layer:** API / Security
+**Type:** Negative | **Priority:** High | **Layer:** API / Security | **Group:** api
 
 **Steps:**
 1. Send `POST /v1/profile/{profile_id}/vod-preferences` without auth token.
@@ -189,11 +188,9 @@
 
 ---
 
-## TC-13 — User skips onboarding — profile receives default recommendations
+### TC-13 — User skips onboarding — profile receives default recommendations
 
-**Type:** Positive | **Priority:** High | **Layer:** E2E / API
-
-**Preconditions:** User is on the onboarding screen.
+**Type:** Positive | **Priority:** High | **Layer:** E2E / API | **Group:** api
 
 **Steps:**
 1. Click "Skip" button.
@@ -201,16 +198,14 @@
 
 **Expected Result:**
 - Onboarding screen closes.
-- `GET /v1/profile/{profile_id}/recommendations` returns default (non-personalised) content.
-- Profile is marked as "onboarding completed" (screen does not reappear).
+- `GET /v1/profile/{profile_id}/recommendations` returns default content.
+- Profile is marked as "onboarding completed".
 
 ---
 
-## TC-14 — Skipping onboarding does NOT call POST /vod-preferences
+### TC-14 — Skipping onboarding does NOT call POST /vod-preferences
 
-**Type:** Negative | **Priority:** Medium | **Layer:** API
-
-**Preconditions:** User is on the onboarding screen.
+**Type:** Negative | **Priority:** Medium | **Layer:** API | **Group:** api
 
 **Steps:**
 1. Click "Skip".
@@ -220,24 +215,20 @@
 
 ---
 
-## TC-15 — Duplicate POST /vod-preferences for same profile is handled correctly
+### TC-15 — Duplicate POST /vod-preferences for same profile is handled correctly
 
-**Type:** Boundary | **Priority:** Medium | **Layer:** API
-
-**Preconditions:** Profile has already completed onboarding.
+**Type:** Boundary | **Priority:** Medium | **Layer:** API | **Group:** api
 
 **Steps:**
 1. Send `POST /v1/profile/{profile_id}/vod-preferences` a second time with different data.
 
-**Expected Result:** Either `200 OK` (update) or `409 Conflict` — consistent and documented behaviour. Data in DB reflects one stable state.
+**Expected Result:** Either `200 OK` (update) or `409 Conflict` — consistent behaviour.
 
 ---
 
-## TC-16 — Recommendations update after preferences are saved
+### TC-16 — Recommendations update after preferences are saved
 
-**Type:** Positive | **Priority:** Critical | **Layer:** API / Integration
-
-**Preconditions:** Profile exists with no previous preferences.
+**Type:** Positive | **Priority:** Critical | **Layer:** API / Integration | **Group:** api
 
 **Steps:**
 1. Call `GET /v1/profile/{profile_id}/recommendations` — note results.
@@ -248,53 +239,87 @@
 
 ---
 
-## TC-17 — API returns 400 for invalid (non-existent) genre IDs
+### TC-17 — API returns 400 for invalid genre IDs
 
-**Type:** Negative | **Priority:** Medium | **Layer:** API
+**Type:** Negative | **Priority:** Medium | **Layer:** API | **Group:** api
 
 **Steps:**
-1. Send `POST /v1/profile/{profile_id}/vod-preferences` with body:
-```json
-{
-  "genre_ids": [9999, 8888, 7777],
-  "movie_ids": [101, 202, 303, 404, 505]
-}
-```
+1. Send `POST /v1/profile/{profile_id}/vod-preferences` with non-existent genre IDs.
 
 **Expected Result:** Response `400 Bad Request` or `422 Unprocessable Entity`.
 
 ---
 
-## TC-18 — API handles request with missing movie_ids field
+### TC-18 — API handles request with missing movie_ids field
 
-**Type:** Boundary | **Priority:** Medium | **Layer:** API
+**Type:** Boundary | **Priority:** Medium | **Layer:** API | **Group:** api
 
 **Steps:**
 1. Send `POST /v1/profile/{profile_id}/vod-preferences` with only `genre_ids`, omitting `movie_ids`.
 
-**Expected Result:** Documented behaviour — either saves genres only (partial save) or returns `400`. Behaviour must be consistent.
+**Expected Result:** Documented behaviour — either saves genres only or returns `400`.
+
+---
+
+## 🟢 UI TEST CASES
+> Added manually — AI initially missed the UI test layer requirement from the task description.
+> Automated using Playwright for Java.
+
+### TC-UI-01 — "Next" button is disabled when fewer than 3 genres selected
+
+**Type:** Negative (Boundary) | **Priority:** High | **Layer:** UI | **Group:** ui
+
+**Preconditions:** Onboarding screen is visible; Step 1 (genre selection).
+
+**Steps:**
+1. Navigate to onboarding screen.
+2. Select 2 genres.
+3. Observe "Next" button state.
+
+**Expected Result:** "Next" button is disabled/inactive.
+
+**Automated:** `VodOnboardingUiTest.testNextButtonDisabledWithLessThanThreeGenres`
+
+---
+
+### TC-UI-02 — "Next" button activates when exactly 3 genres are selected
+
+**Type:** Positive (Boundary) | **Priority:** High | **Layer:** UI | **Group:** ui
+
+**Preconditions:** Onboarding screen is visible; Step 1.
+
+**Steps:**
+1. Navigate to onboarding screen.
+2. Select exactly 3 genres.
+3. Observe "Next" button state.
+
+**Expected Result:** "Next" button becomes active/enabled.
+
+**Automated:** `VodOnboardingUiTest.testNextButtonEnabledWithThreeGenres`
 
 ---
 
 ## Summary
 
-| ID    | Scenario                                      | Type     | Layer        | Priority |
-|-------|-----------------------------------------------|----------|--------------|----------|
-| TC-01 | Onboarding appears once after profile creation | Positive | E2E          | High     |
-| TC-02 | Onboarding not shown on second visit           | Negative | E2E          | High     |
-| TC-03 | Next disabled with < 3 genres                  | Negative | E2E/UI Logic | High     |
-| TC-04 | Next active with exactly 3 genres              | Boundary | E2E/UI Logic | High     |
-| TC-05 | Next active with > 3 genres                    | Positive | E2E/UI Logic | Medium   |
-| TC-06 | Step 2 shows movies by genres                  | Positive | E2E/API      | High     |
-| TC-07 | User selects 5 movies and submits              | Positive | E2E          | High     |
-| TC-08 | API saves genre & movie IDs correctly          | Positive | API          | Critical |
-| TC-09 | API 400 for < 3 genres                         | Negative | API          | High     |
-| TC-10 | API 400 for empty body                         | Negative | API          | High     |
-| TC-11 | API 404 for invalid profile_id                 | Negative | API          | High     |
-| TC-12 | API 401 without auth token                     | Negative | API/Security | High     |
-| TC-13 | Skip → default recommendations                 | Positive | E2E/API      | High     |
-| TC-14 | Skip → POST not called                         | Negative | API          | Medium   |
-| TC-15 | Duplicate POST handled correctly               | Boundary | API          | Medium   |
-| TC-16 | Recommendations update after preferences saved | Positive | API/Integration | Critical |
-| TC-17 | API 400 for invalid genre IDs                  | Negative | API          | Medium   |
-| TC-18 | API handles missing movie_ids field            | Boundary | API          | Medium   |
+| ID | Scenario | Type | Layer | Group | Priority |
+|----|----------|------|-------|-------|----------|
+| TC-01 | Onboarding appears once after profile creation | Positive | E2E | api | High |
+| TC-02 | Onboarding not shown on second visit | Negative | E2E | api | High |
+| TC-03 | Next disabled with < 3 genres | Negative | E2E/UI Logic | api | High |
+| TC-04 | Next active with exactly 3 genres | Boundary | E2E/UI Logic | api | High |
+| TC-05 | Next active with > 3 genres | Positive | E2E/UI Logic | api | Medium |
+| TC-06 | Step 2 shows movies by genres | Positive | E2E/API | api | High |
+| TC-07 | User selects 5 movies and submits | Positive | E2E | api | High |
+| TC-08 | API saves genre & movie IDs correctly | Positive | API | api | Critical |
+| TC-09 | API 400 for < 3 genres | Negative | API | api | High |
+| TC-10 | API 400 for empty body | Negative | API | api | High |
+| TC-11 | API 404 for invalid profile_id | Negative | API | api | High |
+| TC-12 | API 401 without auth token | Negative | API/Security | api | High |
+| TC-13 | Skip → default recommendations | Positive | E2E/API | api | High |
+| TC-14 | Skip → POST not called | Negative | API | api | Medium |
+| TC-15 | Duplicate POST handled correctly | Boundary | API | api | Medium |
+| TC-16 | Recommendations update after preferences saved | Positive | API/Integration | api | Critical |
+| TC-17 | API 400 for invalid genre IDs | Negative | API | api | Medium |
+| TC-18 | API handles missing movie_ids field | Boundary | API | api | Medium |
+| TC-UI-01 | Next button disabled with < 3 genres (UI) | Negative | UI | ui | High |
+| TC-UI-02 | Next button enabled with exactly 3 genres (UI) | Positive | UI | ui | High |
