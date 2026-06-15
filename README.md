@@ -13,9 +13,9 @@ which are then used to personalise their home screen recommendations.
 80% of test artifacts (test cases and code) were generated using AI (Claude by Anthropic),
 with a human acting as Reviewer and Prompt Engineer.
 
-> **Note:** AI initially generated only API tests and missed the UI test layer requirement.
-> The Reviewer identified this gap and prompted AI to add Playwright UI tests.
-> See `PROMPTS.md` for full details.
+> **Note:** AI initially generated only API tests starting from TC-08 and missed TC-01, TC-02,
+> TC-05, TC-06, TC-07 and the entire UI test layer. The Reviewer identified all gaps and
+> corrected via follow-up prompts. See `PROMPTS.md` for full details.
 
 ---
 
@@ -53,7 +53,7 @@ vod-preferences-tests/
 │           └── testng.xml                          # Test suite with API and UI groups
 ├── TEST-CASES.md                                   # All test cases (API + UI)
 ├── PROMPTS.md                                      # AI prompt log
-├── AI-STRATEGY.md                                  # AI test generation strategy
+├── AI-STRATEGY.md                                  # AI test generation and bug report strategy
 ├── pom.xml
 └── README.md
 ```
@@ -64,21 +64,29 @@ vod-preferences-tests/
 
 ### API Tests (group: api)
 
-| Test | Description | Type |
-|------|-------------|------|
-| testSaveValidPreferences | Valid genres and movies saved successfully | Positive |
-| testSavePreferencesWithTwoGenres | API returns 400 for fewer than 3 genres | Negative |
-| testSavePreferencesWithEmptyLists | API returns 400 for empty body | Negative |
-| testSavePreferencesForInvalidProfile | API returns 404 for non-existent profile | Negative |
-| testSavePreferencesWithoutAuth | API returns 401 without auth token | Security |
-| testRecommendationsUpdateAfterPreferences | Recommendations change after preferences saved | Integration |
+| Test | TC | Description | Type |
+|------|----|-------------|------|
+| testNewProfileHasOnboardingNotCompleted | TC-01 | New profile has onboarding_completed = false | Positive |
+| testProfileOnboardingCompletedAfterSurvey | TC-02 | onboarding_completed = true after survey done | Positive |
+| testMoviesByGenreReturnsFilteredContent | TC-06 | Movies endpoint filters by genre IDs | Positive |
+| testSubmitExactlyFiveMovies | TC-07 | Submitting exactly 5 movies returns success | Positive |
+| testSaveValidPreferences | TC-08 | Valid genres and movies saved successfully | Positive |
+| testSavePreferencesWithTwoGenres | TC-09 | API returns 400 for fewer than 3 genres | Negative |
+| testSavePreferencesWithEmptyLists | TC-10 | API returns 400 for empty body | Negative |
+| testSavePreferencesForInvalidProfile | TC-11 | API returns 404 for non-existent profile | Negative |
+| testSavePreferencesWithoutAuth | TC-12 | API returns 401 without auth token | Security |
+| testSkipOnboardingReturnsDefaultRecommendations | TC-13 | Skip onboarding → recommendations return 200 | Positive |
+| testRecommendationsUpdateAfterPreferences | TC-16 | Recommendations change after preferences saved | Integration |
+| testSavePreferencesWithInvalidGenreIds | TC-17 | API returns 400 for invalid genre IDs | Negative |
+| testSavePreferencesWithMissingMovieIds | TC-18 | API handles missing movie_ids field | Boundary |
 
 ### UI Tests (group: ui)
 
-| Test | Description | Type |
-|------|-------------|------|
-| testNextButtonDisabledWithLessThanThreeGenres | Next button disabled when < 3 genres selected | Negative |
-| testNextButtonEnabledWithThreeGenres | Next button enabled when exactly 3 genres selected | Positive |
+| Test | TC | Description | Type |
+|------|----|-------------|------|
+| testNextButtonDisabledWithLessThanThreeGenres | TC-03/TC-UI-01 | Next button disabled when < 3 genres selected | Negative |
+| testNextButtonEnabledWithThreeGenres | TC-04/TC-UI-02 | Next button enabled when exactly 3 genres selected | Positive |
+| testNextButtonRemainsEnabledWithMoreThanThreeGenres | TC-05 | Next button remains enabled with > 3 genres | Positive |
 
 ---
 
@@ -97,6 +105,11 @@ mvn test -Dgroups=api
 **Run only UI tests:**
 ```bash
 mvn test -Dgroups=ui
+```
+
+**Generate Allure report:**
+```bash
+mvn allure:serve
 ```
 
 ---
